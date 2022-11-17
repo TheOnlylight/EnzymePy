@@ -43,7 +43,7 @@ class ChemUtils():
         reverse_dict = {}
         for key in syns:
             for item in syns[key]:
-                if item in reverse_dict:
+                if item.lower() in reverse_dict:
                     reverse_dict[item.lower()].append(key.lower())
                 else:
                     reverse_dict[item.lower()] = [key.lower()]
@@ -52,7 +52,11 @@ class ChemUtils():
         return syns, syns_list, reverse_dict
     @classmethod
     def dissolve_enzyme_synonym(cls, name):
-        return cls.reverse_dict[name.lower()]
+        try:
+            return cls.reverse_dict[name.lower()]
+        except Exception:
+            print(f'no enzyme found for {name}')
+            return []
     @classmethod
     def find_reactions(cls, duplicate_pairs, ):
         brenda = cls.brenda
@@ -67,7 +71,7 @@ class ChemUtils():
         print("reaction pairs:", len(reaction_pairs))
         return reaction_pairs
     @classmethod
-    def find_reaction(cls, ec, cid = []):
+    def find_reaction(cls, ec = [], cid = []):
         """find reaction according to ec and cids
 
         Args:
@@ -75,16 +79,31 @@ class ChemUtils():
             cid (_type_): the cid
         """
         brenda = cls.brenda
+        # print(ec)
         reaction_ids = [] # save mapped react id and ent name
-        for key in brenda:
-            if brenda[key]['ec_name'] == ec:
-                set_ex_cid = set(cid)
+        if ec != []:
+            for key in brenda:
+                if brenda[key]['ec_name'].lower() == ec:
+                    set_ex_cid = set(cid)
+                    for idx, cand_cids in enumerate(brenda[key]['cids']):
+                        set_cand = set(cand_cids)
+                        # print(set_cand)
+                        if (set_cand & set_ex_cid) or cid == []:
+                            cand_ent_name = brenda[key]['cems'][idx] # save the mapped ent name
+                            reaction_ids.append([key, cand_ent_name])
+        else:
+            print(cid)
+            set_ex_cid = set(cid)
+            for key in brenda:
                 for idx, cand_cids in enumerate(brenda[key]['cids']):
                     set_cand = set(cand_cids)
+                    # print(set_cand)
                     if (set_cand & set_ex_cid) or cid == []:
                         cand_ent_name = brenda[key]['cems'][idx] # save the mapped ent name
                         reaction_ids.append([key, cand_ent_name])
-
+        return reaction_ids
+ChemUtils.load_brenda()
+ChemUtils.init_syns()
 
 if __name__ == "__main__":
     ChemUtils.load_brenda()

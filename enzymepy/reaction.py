@@ -20,13 +20,17 @@ class Compound():
         input,
         init_mode
     ):
+        
         try:
-            self.pcp_data = pcp.get_compounds(input, init_mode)
-            self.smiles = self.pcp_data.isometric_smiles
+            self.pcp_data = pcp.get_compounds(input.lower(), init_mode)[0]
             self.cid = self.pcp_data.cid
+            self.compound = pcp.Compound.from_cid(self.cid)
+            self.smiles = self.pcp_data.isomeric_smiles
+            
             self.pcp_valid = True
         except Exception:
             self.pcp_valid = False
+            print(f'no found pcp for {input}',)
         
         self.rd_valid = True
         if self.pcp_valid:
