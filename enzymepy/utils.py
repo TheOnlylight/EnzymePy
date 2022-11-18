@@ -3,7 +3,7 @@ import pickle
 import json
 from tqdm import tqdm
 from rdkit import DataStructs, Chem
-
+from nltk.metrics import *
 def load_json(path):
     with open(path, 'r', encoding='utf-8') as f:
         data = json.load(f)
@@ -11,15 +11,32 @@ def load_json(path):
 
 class ChemUtils():
     @staticmethod
+    def dynamic_leven_dist(str1, str2):
+        result = edit_distance_align(str1, str2, substitution_cost=1)
+        return result
+    @staticmethod
+    def leven_dist(str1, str2):
+        return edit_distance(str1, str2, substitution_cost=1)
+    @staticmethod
     def search_compounds_list(mols):
         ans = []
         for m in mols:
             ans += pcp.get_compounds(m, 'name')
         return ans
+    @staticmethod
+    def str_sim(str1, str2):
+        tot_len = len(str1)
+        dist = ChemUtils.leven_dist(str1, str2)
+        good = tot_len - dist
+        if(good <= 0):
+            good = 0
+            return good/tot_len
+        else:
+            return good/tot_len
     @classmethod
     def load_brenda(
         cls, 
-        brenda_datapath = '/data2/private/zhouhantao/MultiModal/kara/data/BrendaIDwithCid_duplicated.pkl', 
+        brenda_datapath = 'data/BrendaIDwithCid_duplicated.pkl', 
         syn_datapath = ''
         ):
         with open(brenda_datapath, 'rb') as handle:
@@ -31,7 +48,7 @@ class ChemUtils():
         syns_list: all synonyms of ec
         reverse_dict: map synonyms to standard names
         '''
-        syn_file = '/data2/private/zhouhantao/data/synonyms.json'
+        syn_file = 'data/synonyms.json'
         syns = load_json(syn_file)
         syns_list = []
         for key in syns:
@@ -49,7 +66,11 @@ class ChemUtils():
                     reverse_dict[item.lower()] = [key.lower()]
         print(len(reverse_dict))
         cls.reverse_dict = reverse_dict
+        cls.dict = syns
         return syns, syns_list, reverse_dict
+    @classmethod
+    def get_syns(cls, enzyme):
+        return cls.dict[enzyme]
     @classmethod
     def dissolve_enzyme_synonym(cls, name):
         try:
@@ -102,6 +123,9 @@ class ChemUtils():
                         cand_ent_name = brenda[key]['cems'][idx] # save the mapped ent name
                         reaction_ids.append([key, cand_ent_name])
         return reaction_ids
+    @classmethod
+    def get_brenda_reaction(cls, id):
+        return cls.brenda[id]
 ChemUtils.load_brenda()
 ChemUtils.init_syns()
 
@@ -110,3 +134,5 @@ if __name__ == "__main__":
     ChemUtils.init_syns()
     a = ChemUtils.dissolve_enzyme_synonym('GlyDH')
     print(a)
+    print(ChemUtils.leven_dist('gly', '-glyfdas8'))
+    print(ChemUtils.str_sim('gly', '-gly'))
