@@ -1,0 +1,14 @@
+README.md
+pyproject.toml
+setup.py
+enzymepy.egg-info/PKG-INFO
+enzymepy.egg-info/SOURCES.txt
+enzymepy.egg-info/dependency_links.txt
+enzymepy.egg-info/top_level.txt
+src/enzymepy/__init__.py
+src/enzymepy/chemdata.py
+src/enzymepy/dataloader.py
+src/enzymepy/reaction.py
+src/enzymepy/utils.py
+src/enzymepy/data/BrendaIDwithCid_duplicated.pkl
+src/enzymepy/data/syn.pkl
