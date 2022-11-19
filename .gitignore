@@ -1,3 +1,5 @@
 
 src/enzymepy.egg-info
 dist
+localtest
+testenv
