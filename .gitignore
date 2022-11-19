@@ -3,3 +3,6 @@ src/enzymepy.egg-info
 dist
 localtest
 testenv
+enzymepy.egg-info
+.trunk
+.DS_Store
