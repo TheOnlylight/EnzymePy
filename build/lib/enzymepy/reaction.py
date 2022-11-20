@@ -85,7 +85,7 @@ class Reaction():
         for com in self.compounds:
             tot_cnt += 1
             for c in compounds:
-                sim_com += com.calc_similarity(c)
+                sim_com = max(sim_com, com.calc_similarity(c))
         sim_com /= tot_cnt
         self.sim_compounds = sim_com
     def pprint(self,):
