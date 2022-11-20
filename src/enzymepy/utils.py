@@ -1,8 +1,5 @@
 import pubchempy as pcp
 import pickle
-import json
-from tqdm import tqdm
-import os
 from rdkit import DataStructs, Chem
 from nltk.metrics import *
 import pkgutil

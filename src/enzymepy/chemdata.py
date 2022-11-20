@@ -40,6 +40,17 @@ class ChemData():
         for j in self.only_cid_reaction:
             j.similarities(compounds=self.possible_compounds, enzymes=self.possible_enzymes)
             print(j.sim_compounds)
+    def calc_sim(self):
+        cur_sim = 0
+        for idx, re in enumerate(self.only_cid_reaction):
+            self.only_cid_reaction[idx].similarities(
+                compounds=self.possible_compounds,
+                enzymes=self.possible_enzymes
+            )
+            if cur_sim < self.only_cid_reaction[idx].sim_compounds:
+                self.bet_ans = self.only_cid_reaction[idx]
+                cur_sim = self.only_cid_reaction[idx].sim_compounds
+        self.bet_ans.pprint()
     
 if __name__ == "__main__":
     a = ChemData(
@@ -52,4 +63,4 @@ if __name__ == "__main__":
     print(a.only_enzyme[0][0])
     print(ChemUtils.get_brenda_reaction(265)['cems'])
     print(a.only_cid_reaction)
-    a.show_sim()
+    a.calc_sim()

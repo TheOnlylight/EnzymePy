@@ -6,3 +6,4 @@ testenv
 enzymepy.egg-info
 .trunk
 .DS_Store
+build/lib/enzymepy

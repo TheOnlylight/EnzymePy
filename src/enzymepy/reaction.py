@@ -80,3 +80,5 @@ class Reaction():
                 sim_com += com.calc_similarity(c)
         sim_com /= tot_cnt
         self.sim_compounds = sim_com
+    def pprint(self,):
+        print(self.enzyme, self.compounds)

@@ -1,8 +1,5 @@
 import pubchempy as pcp
 import pickle
-import json
-from tqdm import tqdm
-import os
 from rdkit import DataStructs, Chem
 from nltk.metrics import *
 import pkgutil
@@ -114,10 +111,9 @@ class ChemUtils():
 ChemUtils.load_data()
 
 if __name__ == "__main__":
-    # ChemUtils.load_brenda()
-    # ChemUtils.init_syns()
-    # a = ChemUtils.dissolve_enzyme_synonym('GlyDH')
-    # print(a)
-    # print(ChemUtils.leven_dist('gly', '-glyfdas8'))
-    # print(ChemUtils.str_sim('gly', '-gly'))
-    print(data_syn)
+    ChemUtils.load_brenda()
+    ChemUtils.init_syns()
+    a = ChemUtils.dissolve_enzyme_synonym('GlyDH')
+    print(a)
+    print(ChemUtils.leven_dist('gly', '-glyfdas8'))
+    print(ChemUtils.str_sim('gly', '-gly'))
