@@ -26,7 +26,7 @@ class Compound():
     ):
         self.name = input if init_mode == 'name' else None
         try:
-            self.pcp_data = pcp.get_compounds(input.lower(), init_mode)[0]
+            self.pcp_data = pcp.get_compounds(input.lower() if init_mode == 'name' else input, init_mode)[0]
             self.cid = self.pcp_data.cid
             self.compound = pcp.Compound.from_cid(self.cid)
             self.smiles = self.pcp_data.isomeric_smiles
@@ -39,8 +39,10 @@ class Compound():
         self.rd_valid = True
         if self.pcp_valid:
             self.rd_data = Chem.MolFromSmiles(self.smiles)
+            self.smiles = Chem.MolToSmiles(self.rd_data,kekuleSmiles=True)
         elif init_mode == 'smiles':
             self.rd_data = Chem.MolFromSmiles(input)
+            self.smiles = Chem.MolToSmiles(self.rd_data,kekuleSmiles=True)
         else:
             self.rd_valid = False
             
@@ -54,14 +56,20 @@ class Compound():
             return ChemUtils.str_sim(self.name, other.name)
         else:
             return 0
+    def show_stucture(self):
+        self.image = None
+        if self.rd_valid:
+            self.image = Chem.Draw.MolToImage(mol)
+            return self.image
 class Reaction():
     def __init__(self, substrate = None, products = None, enzyme = None, data = {}):
         self._enzyme = enzyme if enzyme else Enzyme()
         self.substrate = substrate
         self.products = products
+        self.cems = data['cems']
         if data:
             self._enzyme = Enzyme(standard_name = data['ec_name'])
-            self.compounds = [Compound(input = x, init_mode='name') for x in data['cems']]
+            self.compounds = [Compound(input = x[0], init_mode='cid') for x in data['cids'] if x]
     @property
     def enzyme(self):
         return self._enzyme
@@ -82,3 +90,4 @@ class Reaction():
         self.sim_compounds = sim_com
     def pprint(self,):
         print(self.enzyme, self.compounds)
+        print(self.cems)
