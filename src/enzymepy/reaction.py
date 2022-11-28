@@ -59,15 +59,18 @@ class Compound():
     def show_stucture(self):
         self.image = None
         if self.rd_valid:
-            self.image = Chem.Draw.MolToImage(mol)
+            self.image = Chem.Draw.MolToImage(self.rd_data)
             return self.image
 class Reaction():
     def __init__(self, substrate = None, products = None, enzyme = None, data = {}):
         self._enzyme = enzyme if enzyme else Enzyme()
         self.substrate = substrate
         self.products = products
-        self.cems = data['cems']
+        
+
         if data:
+            self.cems = data['cems']
+            self.cids = data['cids']
             self._enzyme = Enzyme(standard_name = data['ec_name'])
             self.compounds = [Compound(input = x[0], init_mode='cid') for x in data['cids'] if x]
     @property
@@ -86,8 +89,27 @@ class Reaction():
             tot_cnt += 1
             for c in compounds:
                 sim_com = max(sim_com, com.calc_similarity(c))
-        sim_com /= tot_cnt
+        sim_com /= tot_cnt if tot_cnt > 0 else 1
         self.sim_compounds = sim_com
     def pprint(self,):
         print(self.enzyme, self.compounds)
         print(self.cems)
+    def get_images(self):
+        self.images = []
+        for j in self.compounds:
+            self.images += [j.show_structure]
+    def get_dict(self):
+        ans = {}
+        ans['enzyme_name'] = self.standard_name
+        reaction = ""
+        cems = []
+        for j in self.substrate:
+            reaction += j
+            cems += [j]
+        reaction += " = "
+        for j in self.products:
+            reaction += j
+            cems += [j]
+        ans['reaction'] = reaction
+        ans['cems'] = cems
+        ans['cids'] = self.cids

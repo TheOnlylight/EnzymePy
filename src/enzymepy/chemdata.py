@@ -19,15 +19,31 @@ class ChemData():
     @property
     def raw_data(self):
         return self._raw_data
+    def construct_reaction(self, enzyme_name, substrate, product):
+        actual_substrate = []
+        actual_product = []
+        for j in substrate:
+            if j in self.compounds_mapping:
+                actual_substrate += [self.compounds_mapping[j]]
+        for j in product:
+            if j in self.compounds_mapping:
+                actual_product += [self.compounds_mapping[j]]
+        add_reaction = Reaction(substrate=actual_substrate, products=actual_product,enzyme=enzyme_name)
     def process_raw_data(self, ):
         self.possible_enzymes = []
+        self.enzyme_mapping = {}
         self.possible_compounds = []
+        self.compounds_mapping = {}
         for e in self.raw_data.ocr_list:
             self.possible_enzymes += ChemUtils.dissolve_enzyme_synonym(e)
         for e in self.raw_data.ocr_list:
-            self.possible_compounds += [Compound(input = e, init_mode='name')]
+            x = Compound(input = e, init_mode='name')
+            self.possible_compounds += [x]
+            self.compounds_mapping[e] = x
         for e in self.raw_data.smiles_list:
-            self.possible_compounds += [Compound(input = e, init_mode='smiles')]
+            x = Compound(input = e, init_mode='smiles')
+            self.possible_compounds += [x]
+            self.compounds_mapping[e] = x
     def predict_reactions(self,):
         self.only_enzyme = [ChemUtils.find_reaction(x,) for x in self.possible_enzymes]
         self.only_cid = [ChemUtils.find_reaction(ec = [], cid=[x.cid]) for x in self.possible_compounds if x.pcp_valid]
@@ -59,7 +75,7 @@ class ChemData():
             if cur_sim < self.only_enzyme_reaction[idx].sim_compounds:
                 self.bet_ans = self.only_enzyme_reaction[idx]
                 cur_sim = self.only_enzyme_reaction[idx].sim_compounds
-        self.bet_ans.pprint()
+        # self.bet_ans.pprint()
     
 if __name__ == "__main__":
     a = ChemData(

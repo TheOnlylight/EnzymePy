@@ -59,7 +59,7 @@ class ChemData():
             if cur_sim < self.only_enzyme_reaction[idx].sim_compounds:
                 self.bet_ans = self.only_enzyme_reaction[idx]
                 cur_sim = self.only_enzyme_reaction[idx].sim_compounds
-        self.bet_ans.pprint()
+        # self.bet_ans.pprint()
     
 if __name__ == "__main__":
     a = ChemData(

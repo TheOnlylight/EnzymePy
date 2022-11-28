@@ -2,13 +2,10 @@ Metadata-Version: 2.1
 Name: enzymepy
 Version: 0.0.2
 Summary: A small package for chemical data
-Home-page: https://github.com/TheOnlyLight
 Author: Hantao Zhou
 Author-email: Edward Zhou <teddy_chou@outlook.com>
-License: UNKNOWN
-Project-URL: Homepage, https://github.com/TheOnlyLight
-Project-URL: Bug Tracker, https://github.com/pypa/sampleproject/issues
-Platform: UNKNOWN
+Project-URL: Homepage, https://github.com/TheOnlylight/EnzymePy
+Project-URL: Bug Tracker, https://github.com/TheOnlylight/EnzymePy/issues
 Classifier: Programming Language :: Python :: 3
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Operating System :: OS Independent
@@ -18,6 +15,3 @@ Requires: rdkit
 Requires: pubchempy
 Requires-Python: >=3.7
 Description-Content-Type: text/markdown
-
-UNKNOWN
-
