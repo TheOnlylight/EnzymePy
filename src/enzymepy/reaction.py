@@ -112,4 +112,5 @@ class Reaction():
             cems += [j]
         ans['reaction'] = reaction
         ans['cems'] = cems
-        ans['cids'] = self.cids
+        ans['cids'] = [] # TODO
+        return ans

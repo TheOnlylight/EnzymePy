@@ -30,6 +30,10 @@ class ChemUtils():
         else:
             return good/tot_len
     @classmethod
+    def add_entry_brenda(cls, entry):
+        new_id = len(cls.brenda)
+        cls.brenda[new_id] = entry
+    @classmethod
     def load_data(cls):
         syns = pickle.loads(data_syn)
         cls.brenda = pickle.loads(data_brenda)
