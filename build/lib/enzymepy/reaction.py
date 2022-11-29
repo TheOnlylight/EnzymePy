@@ -66,8 +66,11 @@ class Reaction():
         self._enzyme = enzyme if enzyme else Enzyme()
         self.substrate = substrate
         self.products = products
-        self.cems = data['cems']
+        
+
         if data:
+            self.cems = data['cems']
+            self.cids = data['cids']
             self._enzyme = Enzyme(standard_name = data['ec_name'])
             self.compounds = [Compound(input = x[0], init_mode='cid') for x in data['cids'] if x]
     @property
@@ -95,3 +98,19 @@ class Reaction():
         self.images = []
         for j in self.compounds:
             self.images += [j.show_structure]
+    def get_dict(self):
+        ans = {}
+        ans['enzyme_name'] = self.standard_name
+        reaction = ""
+        cems = []
+        for j in self.substrate:
+            reaction += j
+            cems += [j]
+        reaction += " = "
+        for j in self.products:
+            reaction += j
+            cems += [j]
+        ans['reaction'] = reaction
+        ans['cems'] = cems
+        ans['cids'] = [] # TODO
+        return ans
