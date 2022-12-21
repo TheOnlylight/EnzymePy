@@ -25,10 +25,15 @@ class ChemData():
         for j in substrate:
             if j in self.compounds_mapping:
                 actual_substrate += [self.compounds_mapping[j]]
+            else:
+                actual_substrate += j
         for j in product:
             if j in self.compounds_mapping:
                 actual_product += [self.compounds_mapping[j]]
+            else:
+                actual_product += j
         self.add_reaction = Reaction(substrate=actual_substrate, products=actual_product,enzyme=enzyme_name)
+        return self.add_reaction
     def process_raw_data(self, ):
         self.possible_enzymes = []
         self.enzyme_mapping = {}
@@ -37,6 +42,7 @@ class ChemData():
         for e in self.raw_data.ocr_list:
             self.possible_enzymes += ChemUtils.dissolve_enzyme_synonym(e)
         for e in self.raw_data.ocr_list:
+            # TODO about the input methods and searchings
             x = Compound(input = e, init_mode='name')
             self.possible_compounds += [x]
             self.compounds_mapping[e] = x

@@ -25,11 +25,16 @@ class ChemData():
         for j in substrate:
             if j in self.compounds_mapping:
                 actual_substrate += [self.compounds_mapping[j]]
+            else:
+                actual_substrate += j
         for j in product:
             if j in self.compounds_mapping:
                 actual_product += [self.compounds_mapping[j]]
+            else:
+                actual_product += j
         self.add_reaction = Reaction(substrate=actual_substrate, products=actual_product,enzyme=enzyme_name)
-    def process_raw_data(self, ):
+        return self.add_reaction
+    def process_raw_data(self, strict = False ):
         self.possible_enzymes = []
         self.enzyme_mapping = {}
         self.possible_compounds = []
@@ -37,7 +42,10 @@ class ChemData():
         for e in self.raw_data.ocr_list:
             self.possible_enzymes += ChemUtils.dissolve_enzyme_synonym(e)
         for e in self.raw_data.ocr_list:
+            # TODO about the input methods and searchings
             x = Compound(input = e, init_mode='name')
+            if strict is True and x.pcp_valid is False:
+                continue
             self.possible_compounds += [x]
             self.compounds_mapping[e] = x
         for e in self.raw_data.smiles_list:
@@ -56,7 +64,7 @@ class ChemData():
         for j in self.only_cid_reaction:
             j.similarities(compounds=self.possible_compounds, enzymes=self.possible_enzymes)
             print(j.sim_compounds)
-    def calc_sim(self):
+    def calc_sim(self, calc_method = 'name'):
 
         cur_sim = 0
         for idx, re in enumerate(self.only_cid_reaction):

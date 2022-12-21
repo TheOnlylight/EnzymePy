@@ -22,7 +22,8 @@ class Compound():
     def __init__(
         self,
         input,
-        init_mode
+        init_mode,
+        init_strict = False,
     ):
         self.name = input if init_mode == 'name' else None
         try:
@@ -73,6 +74,18 @@ class Reaction():
             self.cids = data['cids']
             self._enzyme = Enzyme(standard_name = data['ec_name'])
             self.compounds = [Compound(input = x[0], init_mode='cid') for x in data['cids'] if x]
+            self.data = data
+            pivot = data['react'].find('=')
+            substrate = []
+            products = []
+            for j in data['cems']:
+                if data['react'].find(j) < pivot:
+                    substrate += [j]
+                else:
+                    products += [j]
+            self.substrate = substrate
+            self.products = products
+
     @property
     def enzyme(self):
         return self._enzyme
@@ -97,20 +110,27 @@ class Reaction():
     def get_images(self):
         self.images = []
         for j in self.compounds:
-            self.images += [j.show_structure]
+            self.images += [j.show_stucture()]
     def get_dict(self):
         ans = {}
-        ans['enzyme_name'] = self.standard_name
+        ans['ec_name'] = self.enzyme
         reaction = ""
         cems = []
         for j in self.substrate:
-            reaction += j
-            cems += [j]
+            reaction += j.name if type(j) is not str else j
+            cems += [j.name if type(j) is not str else j]
         reaction += " = "
         for j in self.products:
-            reaction += j
-            cems += [j]
-        ans['reaction'] = reaction
+            reaction += j.name if type(j) is not str else j
+            cems += [j.name if type(j) is not str else j]
+        ans['react'] = reaction
         ans['cems'] = cems
-        ans['cids'] = [] # TODO
+        cids = []
+        for j in cems:
+            try:
+                cids += [pcp.get_cids(j)]
+            # trunk-ignore(flake8/E722)
+            except:
+                cids += [[]]
+        ans['cids'] = cids # TODO
         return ans

@@ -31,8 +31,10 @@ class ChemUtils():
             return good/tot_len
     @classmethod
     def add_entry_brenda(cls, entry):
-        new_id = len(cls.brenda)
+        new_id = list(cls.brenda.keys())[-1] + 1
         cls.brenda[new_id] = entry
+        cls.dict[entry['ec_name'].lower()] = [entry['ec_name'].lower()]
+        cls.reverse_dict[entry['ec_name'].lower()] = [entry['ec_name'].lower()]
     @classmethod
     def load_data(cls):
         syns = pickle.loads(data_syn)
@@ -56,7 +58,7 @@ class ChemUtils():
         return syns, syns_list, reverse_dict
     @classmethod
     def get_syns(cls, enzyme):
-        return cls.dict[enzyme]
+        return cls.dict[enzyme.lower()]
     @classmethod
     def dissolve_enzyme_synonym(cls, name):
         try:
@@ -90,7 +92,7 @@ class ChemUtils():
         reaction_ids = [] # save mapped react id and ent name
         if ec != []:
             for key in brenda:
-                if brenda[key]['ec_name'].lower() == ec:
+                if brenda[key]['ec_name'].lower() == ec.lower():
                     set_ex_cid = set(cid)
                     for idx, cand_cids in enumerate(brenda[key]['cids']):
                         set_cand = set(cand_cids)
