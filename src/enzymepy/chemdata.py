@@ -1,5 +1,6 @@
 from .reaction import Reaction,Compound
 from .utils import *
+import itertools
 class RecogData():
     def __init__(self,
                 ocr_list = [],
@@ -52,11 +53,27 @@ class ChemData():
             x = Compound(input = e, init_mode='smiles')
             self.possible_compounds += [x]
             self.compounds_mapping[e] = x
-    def predict_reactions(self,):
-        self.only_enzyme = [ChemUtils.find_reaction(x,) for x in self.possible_enzymes]
-        self.only_cid = [ChemUtils.find_reaction(ec = [], cid=[x.cid]) for x in self.possible_compounds if x.pcp_valid]
-        self.only_enzyme_reaction = [Reaction(data = ChemUtils.get_brenda_reaction(id[0][0])) for id in self.only_enzyme if id]
-        self.only_cid_reaction = [Reaction(data = ChemUtils.get_brenda_reaction(id[0][0])) for id in self.only_cid if id]
+    def predict_reactions(self, gross = True):
+        if gross:
+            self.only_enzyme = [ChemUtils.find_reaction(x,) for x in self.possible_enzymes]
+            self.only_cid = [ChemUtils.find_reaction(ec = [], cid=[x.cid]) for x in self.possible_compounds if x.pcp_valid]
+            self.only_enzyme_reaction = [Reaction(data = ChemUtils.get_brenda_reaction(id[0][0])) for id in self.only_enzyme if id]
+            self.only_cid_reaction = [Reaction(data = ChemUtils.get_brenda_reaction(id[0][0])) for id in self.only_cid if id]
+        else:
+            self.only_enzyme = [ChemUtils.find_reaction(x,) for x in self.possible_enzymes]
+            valid_cids = [x.cid for x in self.possible_compounds if x.pcp_valid]
+            self.valid_reaction = []
+            for j in self.only_enzyme:
+                for id in j:
+                    # id represent a reaction
+                    cur_data = ChemUtils.get_brenda_reaction(id[0])
+                    cur_cids = cur_data['cids']
+                    merged_cids = list(itertools.chain(*cur_cids))
+                    if set(merged_cids)&set(valid_cids) is not {}:
+                        self.valid_reaction += [Reaction(data = cur_data)]
+            self.only_enzyme_reaction = self.valid_reaction
+            self.only_cid_reaction = []
+
     def show_sim(self):
         for j in self.only_enzyme_reaction:
             j.similarities(compounds=self.possible_compounds, enzymes=self.possible_enzymes)

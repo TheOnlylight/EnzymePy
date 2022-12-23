@@ -22,7 +22,8 @@ class Compound():
     def __init__(
         self,
         input,
-        init_mode
+        init_mode,
+        init_strict = False,
     ):
         self.name = input if init_mode == 'name' else None
         try:

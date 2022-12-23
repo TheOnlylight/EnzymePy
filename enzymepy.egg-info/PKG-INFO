@@ -15,3 +15,7 @@ Requires: rdkit
 Requires: pubchempy
 Requires-Python: >=3.7
 Description-Content-Type: text/markdown
+
+# EnzymePy
+
+this is the python tool capable of using knowledge and 
