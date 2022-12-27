@@ -61,11 +61,11 @@ class ChemData():
             self.only_enzyme_reaction = [Reaction(data = ChemUtils.get_brenda_reaction(id[0][0])) for id in self.only_enzyme if id]
             self.only_cid_reaction = [Reaction(data = ChemUtils.get_brenda_reaction(id[0][0])) for id in self.only_cid if id]
         else:
-            self.only_enzyme = [ChemUtils.find_reaction(x,) for x in tqdm(self.possible_enzymes)]
+            self.only_enzyme = [ChemUtils.find_reaction(x,) for x in tqdm(self.possible_enzymes, 'search enzyme')]
             valid_cids = [x.cid for x in self.possible_compounds if x.pcp_valid]
             self.valid_reaction = []
             if valid_cids is not []:
-                for j in tqdm(self.only_enzyme):
+                for j in tqdm(self.only_enzyme, 'process enzyme'):
                     for id in j:
                         # id represent a reaction
                         cur_data = ChemUtils.get_brenda_reaction(id[0])
@@ -75,6 +75,7 @@ class ChemData():
                             self.valid_reaction += [Reaction(data = cur_data)]
             self.only_enzyme_reaction = self.valid_reaction
             self.only_cid_reaction = []
+        
 
     def show_sim(self):
         for j in self.only_enzyme_reaction:
@@ -94,7 +95,7 @@ class ChemData():
             if cur_sim < self.only_cid_reaction[idx].sim_compounds:
                 self.bet_ans = self.only_cid_reaction[idx]
                 cur_sim = self.only_cid_reaction[idx].sim_compounds
-        for idx, re in enumerate(self.only_enzyme_reaction):
+        for idx, re in enumerate(tqdm(self.only_enzyme_reaction, 'calc sims')):
             self.only_enzyme_reaction[idx].similarities(
                 compounds=self.possible_compounds,
                 enzymes=self.possible_enzymes
