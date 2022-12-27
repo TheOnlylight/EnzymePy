@@ -27,8 +27,15 @@ class Compound():
     ):
         self.name = input if init_mode == 'name' else None
         try:
-            self.pcp_data = pcp.get_compounds(input.lower() if init_mode == 'name' else input, init_mode)[0]
-            self.cid = self.pcp_data.cid
+            try:
+                cid = ChemUtils.local_pcp[input]
+                if cid == []:
+                    self.cid = -1
+                else:
+                    self.cid = cid[0]
+            except:
+                self.pcp_data = pcp.get_compounds(input.lower() if init_mode == 'name' else input, init_mode)[0]
+                self.cid = self.pcp_data.cid
             self.compound = pcp.Compound.from_cid(self.cid)
             self.smiles = self.pcp_data.isomeric_smiles
             self.name = self.pcp_data.iupac_name

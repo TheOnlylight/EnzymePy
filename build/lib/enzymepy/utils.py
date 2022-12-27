@@ -3,9 +3,15 @@ import pickle
 from rdkit import DataStructs, Chem
 from nltk.metrics import *
 import pkgutil
+import json
+
 data_syn = pkgutil.get_data(__name__, "data/syn.pkl")
 data_brenda = pkgutil.get_data(__name__, "data/BrendaIDwithCid_duplicated.pkl")
 class ChemUtils():
+    @classmethod
+    def load_local_cid(cls, file_path):
+        with open(file_path, 'r') as f:
+            cls.local_pcp = json.load(f)
     @staticmethod
     def dynamic_leven_dist(str1, str2):
         result = edit_distance_align(str1, str2, substitution_cost=1)
