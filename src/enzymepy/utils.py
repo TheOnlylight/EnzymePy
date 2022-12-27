@@ -64,7 +64,10 @@ class ChemUtils():
         return syns, syns_list, reverse_dict
     @classmethod
     def get_syns(cls, enzyme):
-        return cls.dict[enzyme.lower()]
+        try:
+            return cls.dict[enzyme.lower()]
+        except:
+            return [enzyme.lower()]
     @classmethod
     def dissolve_enzyme_synonym(cls, name):
         try:
