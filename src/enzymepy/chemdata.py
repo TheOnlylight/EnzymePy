@@ -66,7 +66,7 @@ class ChemData():
             self.valid_reaction = []
             if valid_cids is not []:
                 for j in tqdm(self.only_enzyme, 'process enzyme'):
-                    for id in j:
+                    for id in tqdm(j, 'process sub enzyme proc'):
                         # id represent a reaction
                         cur_data = ChemUtils.get_brenda_reaction(id[0])
                         cur_cids = cur_data['cids']
