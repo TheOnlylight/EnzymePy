@@ -1,6 +1,7 @@
 from .reaction import Reaction,Compound
 from .utils import *
 import itertools
+from tqdm import tqdm
 class RecogData():
     def __init__(self,
                 ocr_list = [],
@@ -60,17 +61,18 @@ class ChemData():
             self.only_enzyme_reaction = [Reaction(data = ChemUtils.get_brenda_reaction(id[0][0])) for id in self.only_enzyme if id]
             self.only_cid_reaction = [Reaction(data = ChemUtils.get_brenda_reaction(id[0][0])) for id in self.only_cid if id]
         else:
-            self.only_enzyme = [ChemUtils.find_reaction(x,) for x in self.possible_enzymes]
+            self.only_enzyme = [ChemUtils.find_reaction(x,) for x in tqdm(self.possible_enzymes)]
             valid_cids = [x.cid for x in self.possible_compounds if x.pcp_valid]
             self.valid_reaction = []
-            for j in self.only_enzyme:
-                for id in j:
-                    # id represent a reaction
-                    cur_data = ChemUtils.get_brenda_reaction(id[0])
-                    cur_cids = cur_data['cids']
-                    merged_cids = list(itertools.chain(*cur_cids))
-                    if set(merged_cids)&set(valid_cids) is not {}:
-                        self.valid_reaction += [Reaction(data = cur_data)]
+            if valid_cids is not []:
+                for j in tqdm(self.only_enzyme):
+                    for id in j:
+                        # id represent a reaction
+                        cur_data = ChemUtils.get_brenda_reaction(id[0])
+                        cur_cids = cur_data['cids']
+                        merged_cids = list(itertools.chain(*cur_cids))
+                        if set(merged_cids)&set(valid_cids) is not {}:
+                            self.valid_reaction += [Reaction(data = cur_data)]
             self.only_enzyme_reaction = self.valid_reaction
             self.only_cid_reaction = []
 
