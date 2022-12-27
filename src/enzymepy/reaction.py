@@ -80,7 +80,8 @@ class Reaction():
             self.cems = data['cems']
             self.cids = data['cids']
             self._enzyme = Enzyme(standard_name = data['ec_name'])
-            self.compounds = [Compound(input = x[0], init_mode='cid') for x in data['cids'] if x]
+            # self.compounds = [Compound(input = x[0], init_mode='cid') for x in data['cids'] if x]
+            self.compounds = []
             self.data = data
             pivot = data['react'].find('=')
             substrate = []
