@@ -43,6 +43,10 @@ class ChemUtils():
         cls.dict[entry['ec_name'].lower()] = [entry['ec_name'].lower()]
         cls.reverse_dict[entry['ec_name'].lower()] = [entry['ec_name'].lower()]
     @classmethod
+    def load_user_brenda(cls, file_path):
+        with open('file_path','rb') as f:
+            cls.brenda = pickle.load(f)
+    @classmethod
     def load_data(cls):
         syns = pickle.loads(data_syn)
         cls.brenda = pickle.loads(data_brenda)
