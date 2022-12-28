@@ -62,7 +62,9 @@ class ChemData():
             self.only_cid_reaction = [Reaction(data = ChemUtils.get_brenda_reaction(id[0][0])) for id in self.only_cid if id]
         else:
             self.only_enzyme = [ChemUtils.find_reaction(x,) for x in tqdm(self.possible_enzymes, 'search enzyme')]
-            valid_cids = [x.cid for x in self.possible_compounds if x.pcp_valid]
+            valid_cids = [x.cid for x in self.possible_compounds if x.cid]
+            self.valid_compounds = [x for x in self.possible_compounds if x.cid]
+            self.valid_cids = valid_cids
             self.valid_reaction = []
             if valid_cids is not []:
                 for j in tqdm(self.only_enzyme, 'process enzyme'):
