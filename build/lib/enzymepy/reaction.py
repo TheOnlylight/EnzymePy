@@ -26,20 +26,22 @@ class Compound():
         init_strict = False,
     ):
         self.name = input if init_mode == 'name' else None
+        self.cid = 0
         try:
             try:
                 cid = ChemUtils.local_pcp[input]
                 if cid == []:
-                    self.cid = -1
+                    self.cid = 0
                 else:
                     self.cid = cid[0]
             except:
                 self.pcp_data = pcp.get_compounds(input.lower() if init_mode == 'name' else input, init_mode)[0]
+                print('wrong match')
                 self.cid = self.pcp_data.cid
-            self.compound = pcp.Compound.from_cid(self.cid)
-            self.smiles = self.pcp_data.isomeric_smiles
-            self.name = self.pcp_data.iupac_name
-            self.pcp_valid = True
+            # self.compound = pcp.Compound.from_cid(self.cid)
+            # self.smiles = self.pcp_data.isomeric_smiles
+            # self.name = self.pcp_data.iupac_name
+            self.pcp_valid = False
         except Exception:
             self.pcp_valid = False
             print(f'no found pcp for {input}',)
@@ -80,7 +82,8 @@ class Reaction():
             self.cems = data['cems']
             self.cids = data['cids']
             self._enzyme = Enzyme(standard_name = data['ec_name'])
-            self.compounds = [Compound(input = x[0], init_mode='cid') for x in data['cids'] if x]
+            # self.compounds = [Compound(input = x[0], init_mode='cid') for x in data['cids'] if x]
+            self.compounds = []
             self.data = data
             pivot = data['react'].find('=')
             substrate = []

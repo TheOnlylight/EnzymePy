@@ -54,7 +54,7 @@ class ChemData():
             x = Compound(input = e, init_mode='smiles')
             self.possible_compounds += [x]
             self.compounds_mapping[e] = x
-    def predict_reactions(self, gross = True):
+    def predict_reactions(self, gross = True, valve = 2):
         if gross:
             self.only_enzyme = [ChemUtils.find_reaction(x,) for x in self.possible_enzymes]
             self.only_cid = [ChemUtils.find_reaction(ec = [], cid=[x.cid]) for x in self.possible_compounds if x.pcp_valid]
@@ -73,7 +73,7 @@ class ChemData():
                         cur_data = ChemUtils.get_brenda_reaction(id[0])
                         cur_cids = cur_data['cids']
                         merged_cids = list(itertools.chain(*cur_cids))
-                        if set(merged_cids)&set(valid_cids) is not {}:
+                        if len(set(merged_cids)&set(valid_cids)) >= valve:
                             self.valid_reaction += [Reaction(data = cur_data)]
             self.only_enzyme_reaction = self.valid_reaction
             self.only_cid_reaction = []

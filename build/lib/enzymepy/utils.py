@@ -4,6 +4,7 @@ from rdkit import DataStructs, Chem
 from nltk.metrics import *
 import pkgutil
 import json
+from tqdm import tqdm
 
 data_syn = pkgutil.get_data(__name__, "data/syn.pkl")
 data_brenda = pkgutil.get_data(__name__, "data/BrendaIDwithCid_duplicated.pkl")
@@ -42,6 +43,10 @@ class ChemUtils():
         cls.dict[entry['ec_name'].lower()] = [entry['ec_name'].lower()]
         cls.reverse_dict[entry['ec_name'].lower()] = [entry['ec_name'].lower()]
     @classmethod
+    def load_user_brenda(cls, file_path):
+        with open(file_path,'rb') as f:
+            cls.brenda = pickle.load(f)
+    @classmethod
     def load_data(cls):
         syns = pickle.loads(data_syn)
         cls.brenda = pickle.loads(data_brenda)
@@ -64,7 +69,10 @@ class ChemUtils():
         return syns, syns_list, reverse_dict
     @classmethod
     def get_syns(cls, enzyme):
-        return cls.dict[enzyme.lower()]
+        try:
+            return cls.dict[enzyme.lower()]
+        except:
+            return [enzyme.lower()]
     @classmethod
     def dissolve_enzyme_synonym(cls, name):
         try:
@@ -80,7 +88,7 @@ class ChemUtils():
             ec = item[0]
             cid = item[1]
             # print(ec, cid)
-            reaction_ids = cls.find_reactions(ec, cid)
+            reaction_ids = cls.find_reaction(ec, cid)
             if reaction_ids != []:
                 reaction_pairs.append([ec, cid, reaction_ids])
         print("reaction pairs:", len(reaction_pairs))
@@ -97,7 +105,7 @@ class ChemUtils():
         # print(ec)
         reaction_ids = [] # save mapped react id and ent name
         if ec != []:
-            for key in brenda:
+            for key in tqdm(brenda, 'search in brenda'):
                 if brenda[key]['ec_name'].lower() == ec.lower():
                     set_ex_cid = set(cid)
                     for idx, cand_cids in enumerate(brenda[key]['cids']):
