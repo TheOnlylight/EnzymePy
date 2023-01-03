@@ -66,18 +66,21 @@ class ChemData():
             self.valid_compounds = [x for x in self.possible_compounds if x.cid]
             self.valid_cids = valid_cids
             self.valid_reaction = []
+            brenda_ids = []
+            for e in self.only_enzyme:
+                for it in e:
+                    brenda_ids.append(it[0])
+            brenda_ids = list(set(brenda_ids))
             if valid_cids is not []:
-                for j in tqdm(self.only_enzyme, 'process enzyme'):
-                    for id in tqdm(j, 'process sub enzyme proc'):
-                        # id represent a reaction
-                        cur_data = ChemUtils.get_brenda_reaction(id[0])
-                        cur_cids = cur_data['cids']
-                        merged_cids = list(itertools.chain(*cur_cids))
-                        if len(set(merged_cids)&set(valid_cids)) >= valve:
-                            self.valid_reaction += [Reaction(data = cur_data)]
+                for id in tqdm(brenda_ids, 'process sub enzyme proc'):
+                    # id represent a reaction
+                    cur_data = ChemUtils.get_brenda_reaction(id)
+                    cur_cids = cur_data['cids']
+                    merged_cids = list(itertools.chain(*cur_cids))
+                    if len(set(merged_cids)&set(valid_cids)) >= valve:
+                        self.valid_reaction += [Reaction(data = cur_data)]
             self.only_enzyme_reaction = [Reaction(data = ChemUtils.get_brenda_reaction(id[0][0])) for id in self.only_enzyme if id]
             self.only_cid_reaction = []
-        
 
     def show_sim(self):
         for j in self.only_enzyme_reaction:
