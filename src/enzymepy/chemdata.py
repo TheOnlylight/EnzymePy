@@ -75,9 +75,8 @@ class ChemData():
                         merged_cids = list(itertools.chain(*cur_cids))
                         if len(set(merged_cids)&set(valid_cids)) >= valve:
                             self.valid_reaction += [Reaction(data = cur_data)]
-            self.only_enzyme_reaction = self.valid_reaction
+            self.only_enzyme_reaction = [Reaction(data = ChemUtils.get_brenda_reaction(id[0][0])) for id in self.only_enzyme if id]
             self.only_cid_reaction = []
-        
 
     def show_sim(self):
         for j in self.only_enzyme_reaction:
