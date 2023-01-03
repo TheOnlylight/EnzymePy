@@ -34,6 +34,7 @@ class Compound():
                     self.cid = 0
                 else:
                     self.cid = cid[0]
+                    # simply take the first cid matching from pubchem
             except:
                 self.pcp_data = pcp.get_compounds(input.lower() if init_mode == 'name' else input, init_mode)[0]
                 print('online pcp')
