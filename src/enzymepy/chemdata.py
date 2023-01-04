@@ -57,8 +57,15 @@ class ChemData():
             self.compounds_mapping[e] = x
             
     def predict_pairs(self,):
-        self.pairs = [ChemUtils.find_reaction(x,) for x in tqdm(self.possible_enzymes, 'search enzyme')]
-        self.unique_pairs = list(set(self.pairs))
+        self.pairs = []
+        valid_cids = [x.cid for x in self.possible_compounds if x.cid]
+        self.valid_compounds = [x for x in self.possible_compounds if x.cid]
+        
+        self.valid_cids = valid_cids
+        
+        # valid_cids = filter_list(valid_cids, ban_list)
+        for x in tqdm(self.possible_enzymes, 'search enzyme'):
+            self.pairs.append(ChemUtils.find_pairs(x,valid_cids))
     def predict_reactions(self, gross = True, valve = 2, ban_list = []):
         def filter_list(list, ban_list):
             for b in ban_list:

@@ -147,7 +147,6 @@ class ChemUtils():
                             matched_ids = list(set_cand & set_ex_cid)
                             for mi in matched_ids:
                                 reaction_ids.append([ec.lower(), mi])
-                            
         else:
             print(cid)
             set_ex_cid = set(cid)
@@ -158,7 +157,7 @@ class ChemUtils():
                     if (set_cand & set_ex_cid) or cid == []:
                         cand_ent_name = brenda[key]['cems'][idx] # save the mapped ent name
                         reaction_ids.append([key, cand_ent_name])
-        return reaction_ids
+        return list(set(reaction_ids))
     @classmethod
     def get_brenda_reaction(cls, id):
         return cls.brenda[id]

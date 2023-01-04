@@ -43,6 +43,7 @@ class ChemData():
         self.compounds_mapping = {} # avoid the function
         for e in self.raw_data.ocr_list:
             self.possible_enzymes += ChemUtils.dissolve_enzyme_synonym(e)
+            self.possible_enzymes = list(set(self.possible_enzymes))
         for e in self.raw_data.ocr_list:
             # TODO about the input methods and searchings
             x = Compound(input = e, init_mode='name')
@@ -54,7 +55,22 @@ class ChemData():
             x = Compound(input = e, init_mode='smiles')
             self.possible_compounds += [x]
             self.compounds_mapping[e] = x
-    def predict_reactions(self, gross = True, valve = 2):
+            
+    def predict_pairs(self,):
+        self.pairs = []
+        valid_cids = [x.cid for x in self.possible_compounds if x.cid]
+        self.valid_compounds = [x for x in self.possible_compounds if x.cid]
+        
+        self.valid_cids = valid_cids
+        
+        # valid_cids = filter_list(valid_cids, ban_list)
+        for x in tqdm(self.possible_enzymes, 'search enzyme'):
+            self.pairs.append(ChemUtils.find_reaction(x,valid_cids))
+    def predict_reactions(self, gross = True, valve = 2, ban_list = []):
+        def filter_list(list, ban_list):
+            for b in ban_list:
+                list = list.remove(b)
+            return list
         if gross:
             self.only_enzyme = [ChemUtils.find_reaction(x,) for x in self.possible_enzymes]
             self.only_cid = [ChemUtils.find_reaction(ec = [], cid=[x.cid]) for x in self.possible_compounds if x.pcp_valid]
@@ -64,7 +80,10 @@ class ChemData():
             self.only_enzyme = [ChemUtils.find_reaction(x,) for x in tqdm(self.possible_enzymes, 'search enzyme')]
             valid_cids = [x.cid for x in self.possible_compounds if x.cid]
             self.valid_compounds = [x for x in self.possible_compounds if x.cid]
+            
             self.valid_cids = valid_cids
+            
+            valid_cids = filter_list(valid_cids, ban_list)
             self.valid_reaction = []
             brenda_ids = []
             for e in self.only_enzyme:
