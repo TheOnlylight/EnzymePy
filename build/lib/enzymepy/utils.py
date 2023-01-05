@@ -136,27 +136,20 @@ class ChemUtils():
         brenda = cls.brenda
         # print(ec)
         reaction_ids = [] # save mapped react id and ent name
-        if ec != []:
-            for key in tqdm(brenda, 'search in brenda'):
-                if brenda[key]['ec_name'].lower() == ec.lower():
-                    set_ex_cid = set(cid)
-                    for idx, cand_cids in enumerate(brenda[key]['cids']):
-                        set_cand = set(cand_cids)
-                        # print(set_cand)
-                        if (set_cand & set_ex_cid):
-                            matched_ids = list(set_cand & set_ex_cid)
-                            for mi in matched_ids:
-                                reaction_ids.append([ec.lower(), mi])
-        else:
-            print(cid)
-            set_ex_cid = set(cid)
-            for key in brenda:
+        if cid == []:
+            return None
+        for key in tqdm(brenda, 'search in brenda'):
+            if brenda[key]['ec_name'].lower() == ec.lower():
+                set_ex_cid = set(cid)
                 for idx, cand_cids in enumerate(brenda[key]['cids']):
                     set_cand = set(cand_cids)
                     # print(set_cand)
-                    if (set_cand & set_ex_cid) or cid == []:
-                        cand_ent_name = brenda[key]['cems'][idx] # save the mapped ent name
-                        reaction_ids.append([key, cand_ent_name])
+                    if (set_cand & set_ex_cid):
+                        matched_ids = list(set_cand & set_ex_cid)
+                        for mi in matched_ids:
+                            reaction_ids.append((ec.lower(), mi))
+        if reaction_ids == []:
+            return None
         return list(set(reaction_ids))
     @classmethod
     def get_brenda_reaction(cls, id):
