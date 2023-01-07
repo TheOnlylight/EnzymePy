@@ -65,7 +65,7 @@ class ChemData():
         
         # valid_cids = filter_list(valid_cids, ban_list)
         for x in tqdm(self.possible_enzymes, 'search enzyme'):
-            self.pairs.append(ChemUtils.find_pairs(x,valid_cids))
+            self.pairs+=ChemUtils.find_pairs(x,valid_cids)
     def predict_reactions(self, gross = True, valve = 2, ban_list = []):
         def filter_list(list, ban_list):
             for b in ban_list:
