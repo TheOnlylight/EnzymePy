@@ -36,27 +36,42 @@ class ChemData():
                 actual_product += j
         self.add_reaction = Reaction(substrate=actual_substrate, products=actual_product,enzyme=enzyme_name)
         return self.add_reaction
-    def process_raw_data(self, strict = False ):
+    def process_raw_data(self, strict = False, ban_list = [] ):
         self.possible_enzymes = []
         self.enzyme_mapping = {}
         self.possible_compounds = []
+        self.cid2ocr = {}
+        self.stdenz2ocr = {} # the mapping from std enz name to ocr
         self.compounds_mapping = {} # avoid the function
         for e in self.raw_data.ocr_list:
-            self.possible_enzymes += ChemUtils.dissolve_enzyme_synonym(e)
+            if e in ban_list:
+                continue
+            tmp = ChemUtils.dissolve_enzyme_synonym(e)
+            self.possible_enzymes += tmp
             self.possible_enzymes = list(set(self.possible_enzymes))
+            for t in tmp:
+                self.stdenz2ocr[t] = e
         for e in self.raw_data.ocr_list:
+            if e in ban_list:
+                continue
             # TODO about the input methods and searchings
             x = Compound(input = e, init_mode='name')
             if strict is True and x.pcp_valid is False:
                 continue
             self.possible_compounds += [x]
             self.compounds_mapping[e] = x
+            self.cid2ocr[x.cid] = e
         for e in self.raw_data.smiles_list:
             x = Compound(input = e, init_mode='smiles')
             self.possible_compounds += [x]
             self.compounds_mapping[e] = x
             
-    def predict_pairs(self,):
+    def predict_pairs(self, ban_list):
+        def filter_list(list, ban_list):
+            for b in ban_list:
+                list = list.remove(b)
+            return list
+        
         self.pairs = []
         valid_cids = [x.cid for x in self.possible_compounds if x.cid]
         self.valid_compounds = [x for x in self.possible_compounds if x.cid]

@@ -56,7 +56,7 @@ class ChemUtils():
             syns[key] = list(set(syns[key]))
             syns_list += syns[key]
         print(len(syns_list))
-        reverse_dict = {}
+        reverse_dict = {} # allow multiple values to one key
         for key in syns:
             for item in syns[key]:
                 if item.lower() in reverse_dict:
