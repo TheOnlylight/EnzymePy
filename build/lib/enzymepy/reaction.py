@@ -45,7 +45,7 @@ class Compound():
             self.pcp_valid = False
         except Exception:
             self.pcp_valid = False
-            print(f'no found pcp for {input}',)
+            # print(f'no found pcp for {input}',)
         
         self.rd_valid = True
         if self.pcp_valid:

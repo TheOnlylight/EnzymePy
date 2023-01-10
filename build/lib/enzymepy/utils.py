@@ -78,7 +78,7 @@ class ChemUtils():
         try:
             return cls.reverse_dict[name.lower()]
         except Exception:
-            print(f'no enzyme found for {name}')
+            # print(f'no enzyme found for {name}')
             return []
     @classmethod
     def find_reactions(cls, duplicate_pairs, ):
@@ -105,7 +105,7 @@ class ChemUtils():
         # print(ec)
         reaction_ids = [] # save mapped react id and ent name
         if ec != []:
-            for key in tqdm(brenda, 'search in brenda'):
+            for key in brenda:
                 if brenda[key]['ec_name'].lower() == ec.lower():
                     set_ex_cid = set(cid)
                     for idx, cand_cids in enumerate(brenda[key]['cids']):
@@ -138,7 +138,7 @@ class ChemUtils():
         reaction_ids = [] # save mapped react id and ent name
         if cid == []:
             return []
-        for key in tqdm(brenda, 'search in brenda'):
+        for key in brenda:
             if brenda[key]['ec_name'].lower() == ec.lower():
                 set_ex_cid = set(cid)
                 for idx, cand_cids in enumerate(brenda[key]['cids']):

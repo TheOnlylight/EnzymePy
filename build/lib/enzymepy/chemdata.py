@@ -36,7 +36,7 @@ class ChemData():
                 actual_product += j
         self.add_reaction = Reaction(substrate=actual_substrate, products=actual_product,enzyme=enzyme_name)
         return self.add_reaction
-    def process_raw_data(self, strict = False, ban_list = [] ):
+    def process_raw_data(self, strict = False, ban_list = [], word_len_filter = 2):
         self.possible_enzymes = []
         self.enzyme_mapping = {}
         self.possible_compounds = []
@@ -44,7 +44,7 @@ class ChemData():
         self.stdenz2ocr = {} # the mapping from std enz name to ocr
         self.compounds_mapping = {} # avoid the function
         for e in self.raw_data.ocr_list:
-            if e in ban_list:
+            if e.lower() in ban_list or len(e) <= word_len_filter:
                 continue
             tmp = ChemUtils.dissolve_enzyme_synonym(e)
             self.possible_enzymes += tmp
@@ -52,7 +52,7 @@ class ChemData():
             for t in tmp:
                 self.stdenz2ocr[t] = e
         for e in self.raw_data.ocr_list:
-            if e in ban_list:
+            if e.lower() in ban_list or len(e) <= word_len_filter:
                 continue
             # TODO about the input methods and searchings
             x = Compound(input = e, init_mode='name')
@@ -65,8 +65,14 @@ class ChemData():
             x = Compound(input = e, init_mode='smiles')
             self.possible_compounds += [x]
             self.compounds_mapping[e] = x
-            
-    def predict_pairs(self, ban_list):
+    def filter_pairs(self):
+        self.filted_pairs = []
+        for item in self.pairs:
+            if(len(self.stdenz2ocr[item[0]]) == 3) and (len(self.cid2ocr[item[1]]) == 3):
+                continue
+            else:
+                self.filted_pairs += [item]
+    def predict_pairs(self, ban_list = []):
         def filter_list(list, ban_list):
             for b in ban_list:
                 list = list.remove(b)
@@ -79,7 +85,7 @@ class ChemData():
         self.valid_cids = valid_cids
         
         # valid_cids = filter_list(valid_cids, ban_list)
-        for x in tqdm(self.possible_enzymes, 'search enzyme'):
+        for x in self.possible_enzymes:
             self.pairs+=ChemUtils.find_pairs(x,valid_cids)
     def predict_reactions(self, gross = True, valve = 2, ban_list = []):
         def filter_list(list, ban_list):
@@ -92,7 +98,7 @@ class ChemData():
             self.only_enzyme_reaction = [Reaction(data = ChemUtils.get_brenda_reaction(id[0][0])) for id in self.only_enzyme if id]
             self.only_cid_reaction = [Reaction(data = ChemUtils.get_brenda_reaction(id[0][0])) for id in self.only_cid if id]
         else:
-            self.only_enzyme = [ChemUtils.find_reaction(x,) for x in tqdm(self.possible_enzymes, 'search enzyme')]
+            self.only_enzyme = [ChemUtils.find_reaction(x,) for x in self.possible_enzymes]
             valid_cids = [x.cid for x in self.possible_compounds if x.cid]
             self.valid_compounds = [x for x in self.possible_compounds if x.cid]
             
